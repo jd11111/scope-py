@@ -2,8 +2,7 @@ import math
 import numpy as np
 from matplotlib import pyplot as plt
 import time
-from ctypes import cdll
-from ctypes import byref, POINTER, create_string_buffer, c_float, c_int16, c_int32, c_uint32, c_void_p
+from ctypes import cdll, byref, POINTER, create_string_buffer, c_float, c_int16, c_int32, c_uint32, c_void_p
 #from ctypes import c_int32 as c_enum
 
 lib = cdll.LoadLibrary("/home/jd/scope-py/libps2000.so")
