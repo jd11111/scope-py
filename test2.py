@@ -6,7 +6,7 @@ from ctypes import cdll
 from ctypes import byref, POINTER, create_string_buffer, c_float, c_int16, c_int32, c_uint32, c_void_p
 #from ctypes import c_int32 as c_enum
 
-lib = cdll.LoadLibrary("/home/jd/pico-python/libps2000.so")
+lib = cdll.LoadLibrary("/home/jd/scope-py/libps2000.so")
 handle = lib.ps2000_open_unit()
 print(handle)
 s = create_string_buffer(256)
@@ -56,38 +56,40 @@ print(tis)
 print(mss)
 
 T = 10**9
-for ind, tb in enumerate(tbs):
-    if T<tis[ind].value*mss[ind].value:
-        besttb = tb
-        bestidx = ind
-        break
-print(besttb)
 
 code = lib.ps2000_set_sig_gen_built_in(c_int16(handle),c_int32(0),c_uint32(10**6),c_int16(0),c_float(1.43),c_float(1.43),c_float(0),c_float(0),c_int16(0),c_uint32(0))
 print("code for sig gen")
 print(code)
-oversamp =1
-code = lib.ps2000_run_block(c_int16(handle),mss[bestidx],c_int16(besttb),c_int16(1),c_void_p())
-print(code)
 
-while not lib.ps2000_ready(c_int16(handle)):
-    time.sleep(1)
+def run_block(T):
+    for ind, tb in enumerate(tbs):
+        if T<tis[ind].value*mss[ind].value:
+            besttb = tb
+            bestidx = ind
+            success =True
+            break
+    if not success:
+        raise Expection("Time T is too large")
 
-dataA = np.zeros(mss[bestidx].value,dtype=np.int16)
-dataB = np.zeros(mss[bestidx].value,dtype=np.int16)
+    code = lib.ps2000_run_block(c_int16(handle),mss[bestidx],c_int16(besttb),c_int16(1),c_void_p())
+    while not lib.ps2000_ready(c_int16(handle)):
+        time.sleep(0.2)
 
-dataAPtr = dataA.ctypes.data_as(POINTER(c_int16))
-dataBPtr= dataB.ctypes.data_as(POINTER(c_int16))
+    dataA = np.zeros(mss[bestidx].value,dtype=np.int16)
+    dataB = np.zeros(mss[bestidx].value,dtype=np.int16)
 
-code = lib.ps2000_get_values(c_int16(handle),dataAPtr,dataBPtr,c_void_p(),c_void_p(),c_void_p(),c_int32(mss[bestidx].value))
+    dataAPtr = dataA.ctypes.data_as(POINTER(c_int16))
+    dataBPtr= dataB.ctypes.data_as(POINTER(c_int16))
 
-time.sleep(1)
-print(dataA)
-print(len(dataA))
+    code = lib.ps2000_get_values(c_int16(handle),dataAPtr,dataBPtr,c_void_p(),c_void_p(),c_void_p(),mss[bestidx])
+
+    return dataA, dataB, tis[bestidx].value, mss[bestidx].value
+
+dataA, dataB, dt, n = run_block(T)
 
 lib.ps2000_close_unit(c_int16(handle))
 
 fig, ax  = plt.subplots()
-ax.plot(10**-9*tis[bestidx].value*np.array(range(mss[bestidx].value)),dataA/32767)
+ax.plot(10**-9*dt*np.array(range(n)),dataA/32767)
 
 plt.savefig("test.png")
