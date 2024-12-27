@@ -15,7 +15,7 @@ in scope.py to point to libps2000.so
 
 # Special Nixos instructions:
 > nix-shell
-source setup.sh
+> source setup.sh
 
 Will load a nix-shell with libusb1, python and the required libraries
 
