@@ -9,7 +9,7 @@ Should work with trivial modifications on windows.
 # Supported Features:
 - control inbuilt signal generator
 - setup channels
-- aquiring data in block mode
+- aquiring data (as numpy arrays) in block mode
 
 # Prerequisites:
 - libusb1
