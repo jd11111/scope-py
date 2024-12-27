@@ -1,5 +1,10 @@
+# scope-py
+Simple python script to control a PS2000 series Picoscope.
+Works by wrapping the libps2000.so API (see PicoScope 2000 Series Programmer's Guide).
+Tested on linux (nixos) with a 2204A Picscope.
+Should work with trivial modifications on windows.
+
 # Prerequisites:
-- only tested for linux (nixos)
 - libusb1
 - python
 - numpy
