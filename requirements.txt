@@ -1,5 +1,2 @@
 numpy
 matplotlib
-sympy
-lmfit
-antlr4-python3-runtime==4.11

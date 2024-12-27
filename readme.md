@@ -4,8 +4,11 @@ Works by wrapping the libps2000.so API (see PicoScope 2000 Series Programmer's G
 Tested on linux (nixos) with a 2204A Picscope.
 Should work with trivial modifications on windows.
 
+![image](example.png)
+
 # Supported Features:
-- inbuilt signal generator
+- control inbuilt signal generator
+- setup channels
 - aquiring data in block mode
 
 # Prerequisites:
@@ -21,6 +24,7 @@ Should work with trivial modifications on windows.
 
 in scope.py to point to libps2000.so
 - allow filesystem to access scope
+- run example.py to check if it is working
 
 # Special Nixos instructions:
 > nix-shell
