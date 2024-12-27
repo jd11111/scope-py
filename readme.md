@@ -42,6 +42,7 @@ Will load a nix-shell with libusb1, python and the required libraries
 # How to allow access to the scope
 Brute force option (not recommended):
 - Run scripts as root
+
 Smart option (recommended):
 - Make udev rule:  
 > SUBSYSTEM=="usb", ATTR{idVendor}==SCOPEVENDORID, ATTR{idProduct}==SCOPEPRODUCTID, TAG+="uaccess", RUN{builtin}+="uaccess"
