@@ -1,8 +1,12 @@
 # scope-py
-Simple python script to control a PS2000 series Picoscope.
+Simple python script to control PS2000 series Picoscope.
 Works by wrapping the libps2000.so API (see PicoScope 2000 Series Programmer's Guide).
 Tested on linux (nixos) with a 2204A Picscope.
 Should work with trivial modifications on windows.
+
+# Supported Features:
+- inbuilt signal generator
+- aquiring data in block mode
 
 # Prerequisites:
 - libusb1
@@ -32,7 +36,9 @@ Will load a nix-shell with libusb1, python and the required libraries
 - libps2000.so is contained in the unpacked files (as libps2000.X.X.X.so with some version numbers)
 
 # How to allow access to the scope
-- Brute force option (not recommended): Run scripts as root
+Brute force option (not recommended):
+- Run scripts as root
+Smart option (recommended):
 - Make udev rule:  
 > SUBSYSTEM=="usb", ATTR{idVendor}==SCOPEVENDORID, ATTR{idProduct}==SCOPEPRODUCTID, TAG+="uaccess", RUN{builtin}+="uaccess"
 - You can get SCOPEVENDORID:SCOPEPRODUCTID from lsusb
