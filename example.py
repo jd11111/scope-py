@@ -11,7 +11,7 @@ myscope.dump_info()
 #set channel A to be active in DC coupling mode with the voltage range 1V
 myscope.set_channel("A",True,1000,"DC")
 
-#generate a sinwave with amplitude 1V and frequency 1.43
+#generate a sinwave with peak to peak 1V (so 0.5V amplitude) and frequency 1.43
 myscope.sig_gen(10**6,"sin",1.43,1.43)
 
 
