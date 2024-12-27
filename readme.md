@@ -3,6 +3,7 @@ Simple python script to control PS2000 series Picoscope.
 Works by wrapping the libps2000.so API (see PicoScope 2000 Series Programmer's Guide).
 Tested on linux (nixos) with a 2204A Picscope.
 Should work with trivial modifications on windows.
+
 ![image](example.png)
 
 The main code (implementing the scope as a class) is contained in the file scope.py.
