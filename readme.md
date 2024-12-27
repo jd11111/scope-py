@@ -3,10 +3,12 @@ Simple python script to control PS2000 series Picoscope.
 Works by wrapping the libps2000.so API (see PicoScope 2000 Series Programmer's Guide).
 Tested on linux (nixos) with a 2204A Picscope.
 Should work with trivial modifications on windows.
-
 ![image](example.png)
 
-# Supported Features:
+The main code (implementing the scope as a class) is contained in the file scope.py.
+Example usage of this class (generating the above figure) is contained in the file example.py.
+
+# Features:
 - control inbuilt signal generator
 - setup channels
 - aquiring data (as numpy arrays) in block mode
