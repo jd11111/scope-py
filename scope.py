@@ -93,6 +93,8 @@ class ps2000():
         The frequency the waveform will be generated with initially in Hz
         stopFreq: float
         If unequal to startFreq the signal will be generated in sweep mode. In that case stopFreq is the frequency (in Hz) at which the sweep will reverse (frequency) direction/return to startFreq based on sweepType
+        offsetV : int32
+        offset voltage to be applied in microvolts
         increment: float
         the amount (in Hz) the frequency increases/decreases each dwellTime in sweep mode
         dwellTime: float
