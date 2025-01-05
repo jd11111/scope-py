@@ -188,4 +188,47 @@ We then repeat this procedure for different frequencies and fit the above relati
 \end{figure}
 For the phase shift fit the optimal $\tau$ was $\tau = \SI{4.6 \pm 0.2 e-4}{\second}$.
 For the amplitude quotient fit the optimal $\tau$ was $\tau = \SI{5.39 \pm 0.03 e-4}{\second}$.
+\section{Inhomogeneous Solutions}
+Let $G$ be the transfer function (from above) and $a \in (0, \infty)$.
+Consider $u :[0, \infty) \to \mathbb{R}$, $u(t):=a t$ as input.
+Let $y$ be the output of the system with initial value $0$ and input $u$.
+Then (in some right half plane) $\hat y = G  \hat u$, where $\hat{}$ denotes Laplace transform.
+Now $\hat u(s) = a s^{-2}$ for all $s \in \mathbb{C}_{\Re >0}$ and so for all $s \in \mathbb{C}_{\Re >0}$:
+\begin{equation*}
+	\hat y (s) = a s^{-2} \frac{1}{1+ \tau s}.
+\end{equation*}
+According to Wolfram-alpha (inverse Laplace) this implies for all $t\in[0, \infty)$:
+\begin{equation*}
+	y (t) = a(\tau ( e^{-t /\tau } -1) + t).
+\end{equation*}
+Measured by applying periodic signal with ramp first and then nothing (so the capacitor can fully discharge):
+The results can be found in figure \ref{fig:rc_inhom}.
+  \begin{figure}
+     \centering
+     \begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{rc_inhom_ana.pdf}
+	     \caption{measured data (periodic ramp)}
+     \end{subfigure}
+	  \begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{rc_inhom_fit.pdf}
+		  \caption{fit of ramp on the left (time shifted)}
+     \end{subfigure}
+	  \caption{Inhomogeneous RC circuit}
+        \label{fig:rc_inhom}
+\end{figure}
+\section{Linear Quadratic Optimal Control}
+The CARE is:
+\begin{equation*}
+	\Pi^2 \mathcal{B}^2 - 2 \Pi^2 \mathcal{A}^2 - \mathcal{C}^2.
+\end{equation*}
+In this case the only non-negative solutions are:
+\begin{equation*}
+	\Pi = R \sqrt{\frac{1}{1-C^2}}.
+\end{equation*}
+Therefore the optimal control $u:[0, \infty) \to \mathbb{R}$ satisfies for all $t\in [0,\infty)$:
+\begin{equation*}
+	u (t) = - B \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)).
+\end{equation*}
 \end{document}
