@@ -1,6 +1,7 @@
 import numpy as np
 import time
-from ctypes import cdll, byref, POINTER, create_string_buffer, c_float, c_int16, c_int32, c_uint32, c_void_p
+import math
+from ctypes import cdll, byref, POINTER, create_string_buffer, c_float, c_uint8, c_int16, c_int32, c_uint32, c_void_p
 
 lib = cdll.LoadLibrary("/home/jd/scope-py/libps2000.so")
 infoOpts = {"DriverVersion": 0,
@@ -17,6 +18,7 @@ couplingOpts = {"AC": 0, "DC":1}
 channelOpts = {"A":0, "B" : 1}
 sigOpts = {"sin":0, "square":1,"triangle":2,"rampup":3, "rampdown":4,"dc":5,"gaussian":6, "sinc":7,"halfsin":8}
 sweepOpts = {"up":0,"down":1,"updown":2,"downup":3}
+triggerDirectionOpts ={"rising":0, "falling" : 1}
 
 
 class ps2000():
@@ -111,16 +113,12 @@ class ps2000():
 
     def run_block(self,T):
         """
-        Log data for the channels for a time T.
+        Log data for the channels for a time T starting immediately or if a trigger is armed based on the trigger.
         Parameters:
         T : int32
         The time the measurement has to exceed. The minimal timebase/timeinterval will be selected for which measurement with the maximum number of samples will exceed T.
 
         Returns:
-        dataA : numpy.ndarray with int32 entries
-        the measured voltages for channel A. Linear scale with 32767= max voltage (channel range),  -32767 = min voltage (channel range)
-        dataB : numpy.ndarray with int32 entries
-        the measured voltages for channel B. Linear scale with 32767= max voltage (channel range),  -32767 = min voltage (channel range)
         (self.tis[bestidx]).value : int32
         the time interval between consecutive measurements in nano seconds
         (self.mss[bestidx]).value : int32
@@ -132,27 +130,100 @@ class ps2000():
         for ind, tb in enumerate(self.tbs):
             if T<(self.tis[ind]).value*(self.mss[ind]).value:
                 besttb = tb
-                bestidx = ind
+                self.bestidx = ind
                 success =True
                 break
         if not success:
             raise Expection("Time T is too large")
 
-        code = lib.ps2000_run_block(c_int16(self.handle),self.mss[bestidx],c_int16(besttb),c_int16(1),c_void_p())
+        code = lib.ps2000_run_block(c_int16(self.handle),self.mss[self.bestidx],c_int16(besttb),c_int16(1),c_void_p())
         if code ==0:
             raise Exception("Error running block/Parameters out of range")
-        while not lib.ps2000_ready(c_int16(self.handle)):
-            time.sleep(0.2)
+        return (self.tis[self.bestidx]).value, (self.mss[self.bestidx]).value
 
-        dataA = np.zeros((self.mss[bestidx]).value,dtype=np.int16)
-        dataB = np.zeros((self.mss[bestidx]).value,dtype=np.int16)
+    def get_block(self):
+        """
+        Get the data block currently stored on the scope. Must run_block() before and wait for it to finish.
+        returns:
+        dataA : numpy.ndarray with int32 entries
+        the measured voltages for channel A. Linear scale with 32767= max voltage (channel range),  -32767 = min voltage (channel range)
+        dataB : numpy.ndarray with int32 entries
+        the measured voltages for channel B. Linear scale with 32767= max voltage (channel range),  -32767 = min voltage (channel range)
+        """
 
+        dataA = np.zeros((self.mss[self.bestidx]).value,dtype=np.int16)
+        dataB = np.zeros((self.mss[self.bestidx]).value,dtype=np.int16)
         dataAPtr = dataA.ctypes.data_as(POINTER(c_int16))
         dataBPtr= dataB.ctypes.data_as(POINTER(c_int16))
 
-        code = lib.ps2000_get_values(c_int16(self.handle),dataAPtr,dataBPtr,c_void_p(),c_void_p(),c_void_p(),self.mss[bestidx])
+        code = lib.ps2000_get_values(c_int16(self.handle),dataAPtr,dataBPtr,c_void_p(),c_void_p(),c_void_p(),self.mss[self.bestidx])
         if code ==0:
-            raise Exception("Error getting values/Parameters out of range")
-        print("run block sucessfull")
+            raise Exception("Error getting block/Parameters out of range")
+        print("block received")
 
-        return dataA, dataB, (self.tis[bestidx]).value, (self.mss[bestidx]).value
+        return dataA, dataB
+
+    def wait_ready(self):
+        """wait until the scope has finished"""
+        while not lib.ps2000_ready(c_int16(self.handle)):
+            time.sleep(0.2)
+        print("scope ready")
+
+
+    def arm_trigger(self,ch,threshold,direction="rising",delay=0):
+        """
+        Arms the trigger of the scope. The next run_block() will then use this trigger.
+        Parameters:
+        ch : {"A","B"}
+        the channel to trigger from
+        treshold : int16
+        threshold for the trigger in ADC counts -32767 to 32767 (scaled to voltage range).
+        direction: {"rising", "falling"}
+        wheter to trigger when voltage rises above treshold (rising) or when it falls below it (falling)
+        delay: int16
+        The delay (as a percentage of block size) between trigger signal and the start of the block that is logged in percent. Must be -100<= delay <= 100. So delay of 0 means that the block starts at the trigger event and -50 that the trigger event is in the middle of the block.
+        """
+        code = lib.ps2000_set_trigger(c_int16(self.handle),c_int16(channelOpts[ch]),c_int16(threshold),c_int16(triggerDirectionOpts[direction]),c_int16(delay),c_int16(0))
+        if code==0:
+            raise Exception("Error arming trigger/Parameters out of range")
+        print("trigger armed")
+
+    def arb_wave_sig_gen(self,pkToPkV, deltaPhaseExp, waveForm,offsetV):
+        """
+        Generate arbitrary waveforms with the scopes signal generator.
+        The scope has a (zero initialised) phase accumulator (a 32 bit integer), the first few bits (depending on the length of the waveForm) are used to index the given waveForm and the remaining bits do nothing.
+        Every ddsPeriod (1/48Mhz) the scope adds deltaPhase (:=2**deltaPhaseExp) to the phase accumulator and generates the voltage from the given waveform at the index=first 12 bits of the phase accumulator.
+        The frequency of the generated signal is:
+        f = ddsFreq * 2**(deltaPhaseExp-32)
+        Therefore the correct deltaPhaseExp can be found by deltaPhaseExp = 32+ log_2 (f/ddsFreq)
+
+        Parameters:
+        pkToPkV: int32
+        Peak to peak voltage in micro volts
+        deltaPhaseExp: uint
+        2**deltaPhase is the number of steps in the phase accumulator (which indexes the wave form) to go each digital synthesis step
+        waveForm: 1D numpy array with entries of type uint8
+        The wave form data 255 = max voltage, 0 = min (negative) voltage with a linear scale between them, the length of waveForm should be 4096 (=2**12) and must not exceed it
+        offsetV: int32
+        the voltage offset of the signal in micro volts
+        """
+        if len(waveForm) != 4096:
+            raise Exception("supply waveForm of length 4096 (=2**12)")
+        waveFormSize = 2**12
+        deltaPhase = 2**deltaPhaseExp
+        waveFormPtr = waveForm.ctypes.data_as(POINTER(c_uint8))
+        code = lib.ps2000_set_sig_gen_arbitrary(
+            c_int16(self.handle),
+            c_int32(offsetV),
+            c_uint32(pkToPkV),
+            c_uint32(deltaPhase),
+            c_uint32(deltaPhase),
+            c_uint32(0),
+            c_uint32(0),
+            waveFormPtr,
+            c_int32(waveFormSize),
+            c_int32(0),
+            c_uint32(0))
+        if code == 0:
+            raise Exception("Error/Parameters out of range for arbitrary signal generation")
+        print("arbitrary wave form signal generator started")

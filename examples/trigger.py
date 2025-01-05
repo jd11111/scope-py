@@ -10,23 +10,31 @@ myscope.dump_info()
 
 #set channel A to be active in DC coupling mode with the voltage range 1V
 myscope.set_channel("A",True,1000,"DC")
+myscope.set_channel("B",True,1000,"DC")
+
 
 #generate a sinwave with peak to peak 1V (so 0.5V amplitude) and frequency 1.43
-myscope.sig_gen(10**6,"sin",1.43,1.43)
 
 
 T= 10**9
 #measure data for 1 second (signal generator output should be connected to channel A to measure something)
-dataA, dataB, dt, n = myscope.run_block(T)
+treshold = int(np.rint(32767*0.2))
+print(treshold)
+myscope.sig_gen(10**6,"sin",1.43,1.43)
+myscope.arm_trigger("A",treshold,delay=0)
+dt, n = myscope.run_block(T)
+myscope.wait_ready()
+dataA, dataB = myscope.get_block()
 #close scope
 myscope.close_scope()
 
 fig, ax  = plt.subplots()
 #plot data (in volts and with time in seconds)
 ax.plot(10**-9*dt*np.array(range(n)),dataA/32767)
+ax.plot(10**-9*dt*np.array(range(n)),dataB/32767)
 ax.set_xlabel("time (s)")
 ax.set_ylabel("voltage (V)")
 plt.grid()
 ax.set_xlim(0.0,1.4)
 ax.set_ylim(-0.6,0.6)
-plt.savefig("example.png")
+plt.savefig("trigger.png")
