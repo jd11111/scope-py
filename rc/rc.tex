@@ -221,7 +221,7 @@ The results can be found in figure \ref{fig:rc_inhom}.
 \section{Linear Quadratic Optimal Control}
 The CARE is:
 \begin{equation*}
-	\Pi^2 \mathcal{B}^2 - 2 \Pi^2 \mathcal{A}^2 - \mathcal{C}^2.
+	\Pi^2 \mathcal{B}^2 - 2 \Pi^2 \mathcal{A}^2 - \mathcal{C}^2 =0.
 \end{equation*}
 In this case the only non-negative solutions are:
 \begin{equation*}
@@ -229,6 +229,6 @@ In this case the only non-negative solutions are:
 \end{equation*}
 Therefore the optimal control $u:[0, \infty) \to \mathbb{R}$ satisfies for all $t\in [0,\infty)$:
 \begin{equation*}
-	u (t) = - B \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)).
+	u (t) = - \mathcal{B} \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)) x_0 = -\sqrt{\frac{1}{1-C^2}}  \exp \bigg( - t/\tau - t R\sqrt{\frac{1}{1-C^2}}\bigg) x_0
 \end{equation*}
 \end{document}
