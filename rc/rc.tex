@@ -221,14 +221,42 @@ The results can be found in figure \ref{fig:rc_inhom}.
 \section{Linear Quadratic Optimal Control}
 The CARE is:
 \begin{equation*}
-	\Pi^2 \mathcal{B}^2 - 2 \Pi^2 \mathcal{A}^2 - \mathcal{C}^2 =0.
+	\Pi^2 \mathcal{B}^2 - 2 \Pi \mathcal{A} - \mathcal{C}^2 =0.
 \end{equation*}
-In this case the only non-negative solutions are:
+Which has the solutions
 \begin{equation*}
-	\Pi = R \sqrt{\frac{1}{1-C^2}}.
+	\Pi = \mathcal{B}^{-2} ( \mathcal{A} \pm \sqrt{\mathcal{A}^2  + \mathcal{B}^2 \mathcal{C}^2 }).
 \end{equation*}
-Therefore the optimal control $u:[0, \infty) \to \mathbb{R}$ satisfies for all $t\in [0,\infty)$:
+Only the $+$ case results in a non-negative $\Pi$.
+Inserting the values:
 \begin{equation*}
-	u (t) = - \mathcal{B} \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)) x_0 = -\sqrt{\frac{1}{1-C^2}}  \exp \bigg( - t/\tau - t R\sqrt{\frac{1}{1-C^2}}\bigg) x_0
+	\Pi = R^2( 1+ \sqrt{2}) \tau^{-1}.
 \end{equation*}
+Let $x_0 \in \mathbb{R}$ (the initial charge).
+And $ u_0 :=  C^{-1} x_0$ the initial voltage.
+The optimal control $u:[0, \infty) \to \mathbb{R}$ with initial value $x_0$ satisfies for all $t\in [0,\infty)$:
+\begin{equation*}
+	u (t) = - \mathcal{B} \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)) x_0 = - (1+ \sqrt{2}) \exp( - \sqrt{2} t /\tau) u_0.
+\end{equation*}
+
+\section{Minimal Energy Control}
+Let $t_1 \in (0, \infty)$ and $x_0 ,x_1 \in \mathbb{R}$.
+Then the unique (in the a.e. sense) input $u: [0, \infty) \to \mathbb{R}$ with 
+$x(t_1,x_0,u) = x_1$ is given by
+\begin{equation*}
+	u(t) := \mathcal{B} \exp ( (t_1-t) \mathcal{A}) W^{-1} (x_1 - \exp ( \mathcal{A} t_1) x_0),
+\end{equation*}
+where
+\begin{equation*}
+	W := \int_0^{t_1} \exp ( 2 \mathcal{A} t) \mathcal{B}^2 dt.
+\end{equation*}
+Now
+\begin{equation*}
+	W= \frac{C}{ 2R} (1-\exp (-2 t_1/\tau )) \Rightarrow W^{-1} =  \frac{2R}{C} (1 -\exp (-2t_1/\tau ))^{-1}.
+\end{equation*}
+Let $u_0 := C^{-1} x_0, \ u_1 := C^{-1}x_1$. Then for all $t \in [0, \infty)$
+\begin{equation*}
+	u(t) = 2 \exp (-(t_1 -t)/\tau)  (1 \exp (-2t_1/\tau))^{-1} (u_1 - \exp ( t_1/\tau) u_0).
+\end{equation*}
+
 \end{document}
