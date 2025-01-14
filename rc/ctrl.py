@@ -15,9 +15,9 @@ myscope.dump_info()
 
 #set channel A to be active in DC coupling mode with the voltage range 1V
 myscope.set_channel("A",True,1000,"DC")
-myscope.set_channel("B",True,1000,"DC")
+myscope.set_channel("B",True,500,"DC")
 
-tau = 5.4E-4
+tau = 5.41E-4
 f0 = 1/(20*tau)
 ddsFreq = 48*10**6
 y =32+ math.log2(f0/ddsFreq)
@@ -37,7 +37,7 @@ def ctrl(t,u0,u1,t1):
 t1 = 10*tau
 u0= 0.0
 u1= 0.3
-waveform = np.piecewise(X,[X<0.5*TinS,X>=0.5*TinS],[lambda x : ctrl(x,u0,u1,t1), lambda x : 0.0])
+waveform = np.piecewise(X,[X<=t1,X>=t1],[lambda x : ctrl(x,u0,u1,t1), lambda x : 0.0])
 fig,ax = plt.subplots()
 ax.plot(X,waveform)
 plt.savefig("ctrl_waveform.png")
@@ -76,9 +76,9 @@ fig, ax  = plt.subplots()
 #plot data (in volts and with time in seconds)
 times = 10**-9*dt*np.array(range(n))
 vDataA = dataA/32767
-vDataB = dataB/32767
+vDataB = 0.5*dataB/32767
 ax.plot(times,vDataA, label= "ch A")
-ax.plot(times,vDataB, label="ch B")
+ax.plot(times,vDataB, label="ch B",zorder =5)
 ax.axvline(tau)
 ax.set_xlabel("time (s)")
 ax.set_ylabel("voltage (V)")
