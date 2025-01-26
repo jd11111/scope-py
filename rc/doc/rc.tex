@@ -219,7 +219,8 @@ The results can be found in figure \ref{fig:rc_inhom}.
         \label{fig:rc_inhom}
 \end{figure}
 \section{Linear Quadratic Optimal Control}
-The CARE is:
+Let $\Pi \in \mathbb{R}$ solve the CARE.
+That is
 \begin{equation*}
 	\Pi^2 \mathcal{B}^2 - 2 \Pi \mathcal{A} - \mathcal{C}^2 =0.
 \end{equation*}
@@ -230,13 +231,13 @@ Which has the solutions
 Only the $+$ case results in a non-negative $\Pi$.
 Inserting the values:
 \begin{equation*}
-	\Pi = R^2( 1+ \sqrt{2}) \tau^{-1}.
+	\Pi = R^2( \sqrt{2}-1) \tau^{-1}.
 \end{equation*}
 Let $x_0 \in \mathbb{R}$ (the initial charge).
 And $ u_0 :=  C^{-1} x_0$ the initial voltage.
 The optimal control $u:[0, \infty) \to \mathbb{R}$ with initial value $x_0$ satisfies for all $t\in [0,\infty)$:
 \begin{equation*}
-	u (t) = - \mathcal{B} \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)) x_0 = - (1+ \sqrt{2}) \exp( - \sqrt{2} t /\tau) u_0.
+	u (t) = - \mathcal{B} \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)) x_0 = - (\sqrt{2}-1) \exp( - \sqrt{2} t /\tau) u_0.
 \end{equation*}
 
 \section{Minimal Energy Control}
@@ -256,7 +257,7 @@ Now
 \end{equation*}
 Let $u_0 := C^{-1} x_0, \ u_1 := C^{-1}x_1$. Then for all $t \in [0, \infty)$
 \begin{equation*}
-	u(t) = 2 \exp (-(t_1 -t)/\tau)  (1 \exp (-2t_1/\tau))^{-1} (u_1 - \exp ( t_1/\tau) u_0).
+	u(t) = 2 \exp (-(t_1 -t)/\tau)  (1 - \exp (-2t_1/\tau))^{-1} (u_1 - \exp (-t_1/\tau) u_0).
 \end{equation*}
 
 \end{document}

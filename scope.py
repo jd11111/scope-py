@@ -227,3 +227,31 @@ class ps2000():
         if code == 0:
             raise Exception("Error/Parameters out of range for arbitrary signal generation")
         print("arbitrary wave form signal generator started")
+
+def mk_wave(wave):
+    """ helper function that transforms waveform given as voltage data into correct format for AWG
+    Parameters:
+    wave: numpy array of floats
+    Must be of length 4096, this is the waveform to be generated in volts
+    Returns:
+    arbwave: numpy array of uint8
+    the waveform prepared for the awg
+    pk2pkr: int
+    the peak to peak voltage of the waveform in micro volts
+    offsetr: int
+    the offset voltage of the waveform in micro volts
+    """
+    waveform = np.copy(wave)
+    pk2pk = np.max(waveform)- np.min(waveform)
+    offset = np.min(waveform) + pk2pk/2
+    waveform  = waveform -np.min(waveform)
+    waveform = waveform/pk2pk
+    waveform = 255*waveform
+    waveform = np.round(waveform)
+    waveform = np.clip(waveform,a_min= 0, a_max = 255)
+    waveform =waveform.astype("uint8")
+    pk2pkr = np.round(pk2pk*10**6).astype("int")
+    offsetr = np.round(offset*10**6).astype("int")
+    return waveform, pk2pkr, offsetr
+
+
