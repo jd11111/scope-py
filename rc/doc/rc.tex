@@ -239,6 +239,50 @@ The optimal control $u:[0, \infty) \to \mathbb{R}$ with initial value $x_0$ sati
 \begin{equation*}
 	u (t) = - \mathcal{B} \Pi \exp ( t (\mathcal{A}- \mathcal{B}^2 \Pi)) x_0 = - (\sqrt{2}-1) \exp( - \sqrt{2} t /\tau) u_0.
 \end{equation*}
+The optimal cost is $\Pi x_0^2 = C^2 R^2 / \tau (\sqrt{2}-1) u_0^2 = \tau (\sqrt{2}-1) u_0^2 \approx 0.0002237 u_0^2$.
+Experiments: Start with $u_0= \SI{1}{\volt}$. Then: No input vs. LQ-optimal control vs. optimal input to $0$ in time $2\tau$ and then no input.
+Experiment in figure \ref{fig:LQR}.
+Cost for no input: $0.00248$.
+Cost for LQ-optimal control: $0.00210$.
+Cost for optimal input to $0$ in time $2\tau$ then no input: $0.00248$.
+
+
+  \begin{figure}
+     \centering
+     \begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{lqr0_ana.pdf}
+	     \caption{no control discharge}
+     \end{subfigure}
+	  \begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{lqr0_ana2.pdf}
+		  \caption{no control discharge, zoomed and time shifted}
+     \end{subfigure}
+\begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{lqr1_ana.pdf}
+	     \caption{LQ-optimal control discharge}
+     \end{subfigure}
+	  \begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{lqr1_ana2.pdf}
+		  \caption{LQ-optimal control discharge, zoomed and time shifted}
+	  \end{subfigure}
+\begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{lqr2_ana.pdf}
+	     \caption{optimal input to zero control}
+     \end{subfigure}
+	  \begin{subfigure}{0.495\textwidth}
+         %\centering
+	     \includegraphics[width=\textwidth]{lqr2_ana2.pdf}
+		  \caption{optimal input to zero control, zoomed and shifted}
+     \end{subfigure}
+	  \caption{LQR}
+        \label{fig:LQR}
+\end{figure}
+
 
 \section{Minimal Energy Control}
 Let $t_1 \in (0, \infty)$ and $x_0 ,x_1 \in \mathbb{R}$.

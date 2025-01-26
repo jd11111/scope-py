@@ -46,7 +46,6 @@ np.savetxt("lqr_waveform2",waveform2)
 np.savetxt("lqr_waveform3", waveform3)
 
 T= 1*10**9*TinS
-"""
 for idx, waveform in enumerate([waveform1, waveform2,waveform3]):
     print(idx)
     arbwave, pk2pkr, offsetr = scope.mk_wave(waveform)
@@ -66,10 +65,9 @@ for idx, waveform in enumerate([waveform1, waveform2,waveform3]):
     ax.set_ylabel("voltage (V)")
     plt.legend()
     plt.grid()
-    plt.savefig("lqr"+str(idx)+".png")
-    np.savetxt("lqr_times"+str(idx),times)
-    np.savetxt("lqr_chA"+str(idx),vDataA)
-    np.savetxt("lqr_chB"+str(idx),vDataB)
+    plt.savefig("lqr_aq"+str(idx)+".png")
+    np.savetxt("lqr_times_aq"+str(idx),times)
+    np.savetxt("lqr_chA_aq"+str(idx),vDataA)
+    np.savetxt("lqr_chB_aq"+str(idx),vDataB)
 
 myscope.close_scope()
-"""
