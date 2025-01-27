@@ -1,7 +1,8 @@
+import sys
+sys.path.insert(0, '../')
 from matplotlib import pyplot as plt
 import scope
 import numpy as np
-
 #open the scope:
 myscope = scope.ps2000()
 

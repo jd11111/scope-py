@@ -1,9 +1,12 @@
 from matplotlib import pyplot as plt
 import scope
 import numpy as np
+import sys
+sys.path.insert(0, '../')
 import ctypes
 import math
 import time
+
 #open the scope:
 
 myscope = scope.ps2000()

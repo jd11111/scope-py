@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, '../')
 from matplotlib import pyplot as plt
 import scope
 import numpy as np
